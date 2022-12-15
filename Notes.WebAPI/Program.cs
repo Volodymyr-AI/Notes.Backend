@@ -9,13 +9,6 @@ namespace Notes.WebAPI
 {
     public class Program
     {
-        public IConfiguration Configuration { get; }
-
-        public Program(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
         public static void Main(string[] args)
         {
             
@@ -38,14 +31,30 @@ namespace Notes.WebAPI
                 config.AddProfile(new AssemblyMappingProfile(typeof(INotesDbContext).Assembly));
             });
 
-            builder.Services.AddPersistence();
-            builder.Services.AddCors(); // cross-origin resource sharing
+            builder.Services.AddAplication();
+            
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", policy =>
+                {
+                    policy.AllowAnyHeader();
+                    policy.AllowAnyMethod();
+                    policy.AllowAnyOrigin();
+                });
+            }); // cross-origin resource sharing
           
             var app = builder.Build();
+            IConfiguration configuration = app.Configuration;
 
-            
+            builder.Services.AddPersistence(configuration);
+
+            app.UseHttpsRedirection();
+            app.UseCors("AllowAll");
             //app.MapGet("/", () => "Hello World!");
-
+            app.MapGet(endpoints =>
+            {
+                endpoints.MapController();
+            });
             app.Run();
         }
         
