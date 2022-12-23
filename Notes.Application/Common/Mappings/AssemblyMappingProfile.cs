@@ -10,7 +10,7 @@ namespace Notes.Application.Common.Mappings
 
         private void ApplyMappingFromAssembly(Assembly assembly) // realisation of mapping
         {                                                        // method scans assembly and searches 
-            {                                                    // all types that implements IMapWith interface   
+            {                                                    // all types that implement IMapWith interface   
                 var types = assembly.GetExportedTypes()
                 .Where(type => type.GetInterfaces()
                     .Any(i => i.IsGenericType &&
