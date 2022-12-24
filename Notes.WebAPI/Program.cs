@@ -5,6 +5,7 @@ using Notes.Application.Interfaces;
 using Notes.Application;
 using Microsoft.Identity.Client;
 using Notes.Domain;
+using Notes.WebApi.Middleware;
 
 namespace Notes.WebAPI
 {
@@ -50,8 +51,13 @@ namespace Notes.WebAPI
             });
 
             var app = builder.Build();
+
+            app.UseCustomExceptionHandler(); // implement custom middleware of getting exceptions
+            app.UseRouting();
             app.UseHttpsRedirection();
             app.UseCors("AllowAll");
+            
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
