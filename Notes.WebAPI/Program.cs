@@ -6,6 +6,7 @@ using Notes.Application;
 using Microsoft.Identity.Client;
 using Notes.Domain;
 using Notes.WebApi.Middleware;
+using Microsoft.EntityFrameworkCore;
 
 namespace Notes.WebAPI
 {
@@ -33,12 +34,13 @@ namespace Notes.WebAPI
                 config.AddProfile(new AssemblyMappingProfile(typeof(INotesDbContext).Assembly));
             });
 
+            builder.Services.AddDbContext<DbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection")));
 
             builder.Services.AddAplication();
             builder.Services.AddControllers();
 
-            //IConfiguration Configuration;
-            //builder.Services.AddPersistence(Configuration);
+            
 
             builder.Services.AddCors(options =>
             {
