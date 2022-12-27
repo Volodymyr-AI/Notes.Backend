@@ -60,12 +60,9 @@ namespace Notes.WebAPI
             app.UseCors("AllowAll");
             
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
-            //app.MapGet("/", () => "Hello World!");
             
+            //app.MapGet("/", () => "Hello World!");
+            app.MapControllers(); // use controllers as endpoints
             app.Run();
         }
         
