@@ -3,6 +3,7 @@ using Notes.Application.Common.Mappings;
 using System.Reflection;
 using Notes.Application.Interfaces;
 using Notes.Application;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Identity.Client;
 using Notes.Domain;
 using Notes.WebApi.Middleware;
@@ -26,7 +27,7 @@ namespace Notes.WebAPI
                     var context = serviceProvider.GetRequiredService<NotesDbContext>(); // for accessing dependencies
                     DbInitializer.Initialize(context); // initialize database
                 }
-                catch (Exception e) { }
+                catch (Exception exception) { }
             }
             builder.Services.AddAutoMapper(config => // adding automapper to program
             {
@@ -51,14 +52,27 @@ namespace Notes.WebAPI
                     policy.AllowAnyOrigin();
                 });
             });
-
+            builder.Services.AddAuthentication(config =>
+            {
+                config.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                config.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer("Bearer", options =>
+            {
+                options.Authority = "https://localhost:7191/";
+                options.Audience = "NotesWebAPI";
+                options.RequireHttpsMetadata = false;
+            });
             var app = builder.Build();
 
             app.UseCustomExceptionHandler(); // implement custom middleware of getting exceptions
             app.UseRouting();
             app.UseHttpsRedirection();
             app.UseCors("AllowAll");
-            
+
+            //authentication and authorization
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             
             //app.MapGet("/", () => "Hello World!");
