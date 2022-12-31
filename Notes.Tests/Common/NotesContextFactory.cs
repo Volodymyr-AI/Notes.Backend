@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Notes.Tests.Common
 {
-    public class NotesContextClass
+    public class NotesContextFactory
     {
         public static Guid UserAId = Guid.NewGuid();
         public static Guid UserBId = Guid.NewGuid();
@@ -39,10 +39,36 @@ namespace Notes.Tests.Common
                     CreationDate = DateTime.Today.AddDays(-1),
                     Details = "Details2",
                     EditDate = DateTime.Today,
-
-
+                    Id = Guid.Parse("4398EFC2-A8AE-4661-BCC8-4B1248ED6106"),
+                    Title = "Title2",
+                    UserId = UserBId
+                },
+                new Note
+                {
+                    CreationDate= DateTime.Today,
+                    Details = "Details3",
+                    EditDate = null,
+                    Id = NoteIdForDelete,
+                    Title = "Title3",
+                    UserId = UserAId
+                },
+                new Note
+                {
+                    CreationDate = DateTime.Today,
+                    Details = "Details4",
+                    EditDate = null,
+                    Id = NoteIdForUpdate,
+                    Title = "Title4",
+                    UserId = UserBId
                 }
             );
+            context.SaveChanges();
+            return context;
+        }
+        public static void Destroy(NotesDbContext context)
+        {
+            context.Database.EnsureDeleted();
+            context.Dispose();
         }
     }
 }
