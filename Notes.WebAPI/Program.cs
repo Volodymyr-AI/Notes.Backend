@@ -63,8 +63,17 @@ namespace Notes.WebAPI
                 options.Audience = "NotesWebAPI";
                 options.RequireHttpsMetadata = false;
             });
+
+            builder.Services.AddSwaggerGen();
+
             var app = builder.Build();
 
+            app.UseSwagger();
+            app.UseSwaggerUI(config =>
+            {
+                config.RoutePrefix = string.Empty;
+                config.SwaggerEndpoint("swagger/v1/swagger.json", "Notes API");
+            });
             app.UseCustomExceptionHandler(); // implement custom middleware of getting exceptions
             app.UseRouting();
             app.UseHttpsRedirection();
