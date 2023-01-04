@@ -64,7 +64,12 @@ namespace Notes.WebAPI
                 options.RequireHttpsMetadata = false;
             });
 
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(config =>
+            {
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile); // to create path to xml file
+                config.IncludeXmlComments(xmlPath);
+            });
 
             var app = builder.Build();
 
