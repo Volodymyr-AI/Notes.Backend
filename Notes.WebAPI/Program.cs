@@ -8,6 +8,10 @@ using Microsoft.Identity.Client;
 using Notes.Domain;
 using Notes.WebApi.Middleware;
 using Microsoft.EntityFrameworkCore;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using Notes.WebApi;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 
 namespace Notes.WebAPI
 {
@@ -64,20 +68,29 @@ namespace Notes.WebAPI
                 options.RequireHttpsMetadata = false;
             });
 
-            builder.Services.AddSwaggerGen(config =>
+            builder.Services.AddVersionedApiExplorer(options =>
             {
-                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile); // to create path to xml file
-                config.IncludeXmlComments(xmlPath);
+                options.GroupNameFormat = "'v'VVV";
             });
+            builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+
+            builder.Services.AddSwaggerGen();
+
+            builder.Services.AddApiVersioning(); // versioning of API
 
             var app = builder.Build();
 
             app.UseSwagger();
             app.UseSwaggerUI(config =>
             {
-                config.RoutePrefix = string.Empty;
-                config.SwaggerEndpoint("swagger/v1/swagger.json", "Notes API");
+                foreach(var description in ApiVersionDescription)
+                {
+                    config.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json",
+                        description.GroupName.ToUpperInvariant());
+                    config.RoutePrefix = string.Empty;
+                }
+                
+                //config.SwaggerEndpoint("swagger/v1/swagger.json", "Notes API");
             });
             app.UseCustomExceptionHandler(); // implement custom middleware of getting exceptions
             app.UseRouting();
@@ -88,6 +101,7 @@ namespace Notes.WebAPI
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseApiVersioning();
             
             //app.MapGet("/", () => "Hello World!");
             app.MapControllers(); // use controllers as endpoints
