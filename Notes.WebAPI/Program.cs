@@ -23,13 +23,16 @@ namespace Notes.WebAPI
             
             var builder = WebApplication.CreateBuilder(args);
 
+            var connectionString = builder.Services.AddDbContext<DbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection")));
+
             using (var scope = builder.Services.BuildServiceProvider().CreateScope()) // invoke method of Db initialization
             {
                 var serviceProvider = scope.ServiceProvider;
                 try
                 {
                     var context = serviceProvider.GetRequiredService<NotesDbContext>(); // for accessing dependencies
-                    DbInitializer.Initialize(context); // initialize database
+                    DbInitializer.Initialize(connectionString); // initialize database
                 }
                 catch (Exception exception) { }
             }
@@ -39,8 +42,7 @@ namespace Notes.WebAPI
                 config.AddProfile(new AssemblyMappingProfile(typeof(INotesDbContext).Assembly));
             });
 
-            builder.Services.AddDbContext<DbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection")));
+            
 
             builder.Services.AddAplication();
             builder.Services.AddControllers();
