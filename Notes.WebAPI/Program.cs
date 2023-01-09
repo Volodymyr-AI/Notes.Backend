@@ -32,7 +32,7 @@ namespace Notes.WebAPI
                 try
                 {
                     var context = serviceProvider.GetRequiredService<NotesDbContext>(); // for accessing dependencies
-                    DbInitializer.Initialize(connectionString); // initialize database
+                    DbInitializer.Initialize(context); // initialize database
                 }
                 catch (Exception exception) { }
             }
