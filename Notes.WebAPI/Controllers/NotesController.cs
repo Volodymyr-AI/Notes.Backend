@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace Notes.WebApi.Controllers
 {
     //[ApiVersion("1.0")]
-    //[ApiVersion("2.0")]
+    [ApiVersion("2.0")]
     [ApiVersionNeutral] // so controller will work no paying attention to the version
     [Produces("applivation/json")]
     [Route("api/{version:apiVersion}/[controller]")]
